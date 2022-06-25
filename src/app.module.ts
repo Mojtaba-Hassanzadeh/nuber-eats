@@ -2,8 +2,8 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { MongooseModule } from '@nestjs/mongoose';
-import { join } from 'path';
-import { RestaurantsModule } from './restaurants/restaurants.module';
+import { UsersModule } from './users/users.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -12,7 +12,8 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
       autoSchemaFile: true,
     }),
     MongooseModule.forRoot('mongodb://localhost:27017/nuber-eats'),
-    RestaurantsModule,
+    UsersModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],
