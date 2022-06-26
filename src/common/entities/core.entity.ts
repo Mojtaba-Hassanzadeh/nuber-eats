@@ -1,6 +1,8 @@
 import { Field } from '@nestjs/graphql';
 import { Prop } from '@nestjs/mongoose';
+import { ObjectId } from 'mongoose';
 import { v4 as uuid } from 'uuid';
+import mongoose from 'mongoose';
 
 export class CoreEntity {
   @Prop({
@@ -9,14 +11,6 @@ export class CoreEntity {
       return uuid();
     },
   })
-  @Field((type) => String)
-  id: string;
-
-  @Prop()
-  @Field((type) => Date)
-  createdAt: Date;
-
-  @Prop()
-  @Field((type) => Date)
-  updatedAt: Date;
+  @Field((type) => mongoose.Schema.Types.ObjectId)
+  _id: ObjectId;
 }

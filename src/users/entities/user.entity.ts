@@ -7,6 +7,9 @@ import {
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import * as bcrypt from 'bcrypt';
+import { InternalServerErrorException } from '@nestjs/common';
+import { IsEmail, IsEnum, IsString } from 'class-validator';
 
 enum UserRole {
   Client,
@@ -21,19 +24,49 @@ export type UserDocument = User & Document;
 
 @InputType({ isAbstract: true })
 @ObjectType()
-@Schema()
+@Schema({ timestamps: true })
 export class User extends CoreEntity {
   @Prop()
   @Field((type) => String)
+  @IsEmail()
   email: string;
 
   @Prop()
   @Field((type) => String)
+  @IsString()
   password: string;
 
-  @Prop() //{ type: 'enum', enum: UserRole })
+  @Prop()
   @Field((type) => UserRole)
+  @IsEnum(UserRole)
   role: UserRole;
+
+  checkPassword: (password: string) => Promise<boolean>;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.pre('save', async function (next) {
+  const user = this as UserDocument;
+  if (!user.password) {
+    next();
+    return;
+  }
+  if (!user.isModified('password')) return next();
+  try {
+    user.password = await bcrypt.hash(user.password, 10);
+    return next();
+  } catch (e) {
+    return next(e);
+    throw new InternalServerErrorException();
+  }
+});
+
+UserSchema.methods.checkPassword = async function checkPassword(aPassword) {
+  try {
+    return await bcrypt.compare(aPassword, this.password);
+  } catch (error) {
+    console.log(error);
+    throw new InternalServerErrorException(error);
+  }
+};
