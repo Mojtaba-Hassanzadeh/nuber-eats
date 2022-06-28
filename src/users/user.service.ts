@@ -52,4 +52,8 @@ export class UsersService {
       return { ok: false, error };
     }
   }
+
+  async findById(id: string): Promise<UserDocument> {
+    return this.usersModel.findById(id);
+  }
 }
