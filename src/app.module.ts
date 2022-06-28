@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from './jwt/jwt.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -20,6 +21,7 @@ import * as Joi from 'joi';
         dbHost: Joi.string().required(),
         dbPort: Joi.string().required(),
         dbName: Joi.string().required(),
+        PRIVATE_KEY: Joi.string().required(),
       }),
     }),
     GraphQLModule.forRoot({
@@ -29,6 +31,9 @@ import * as Joi from 'joi';
     MongooseModule.forRoot(
       `${process.env.dbType}://${process.env.dbHost}:${process.env.dbPort}/${process.env.dbName}`,
     ),
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
+    }),
     UsersModule,
     CommonModule,
   ],
