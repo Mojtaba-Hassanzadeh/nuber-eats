@@ -13,6 +13,7 @@ import {
   Verification,
   VerificationDocument,
 } from './entities/verification.entity';
+import { VerifyEmailOutput } from './dtos/verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -95,7 +96,7 @@ export class UsersService {
     return user;
   }
 
-  async verifyEmail(code: string): Promise<boolean> {
+  async verifyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
       const verification = await this.verificationsModel
         .findOne({ code })
@@ -106,12 +107,20 @@ export class UsersService {
         user.verified = true;
         console.log(verification.user);
         await user.save();
-        return true;
+        await this.verificationsModel.deleteOne(verification.id);
+        return {
+          ok: true,
+        };
       }
-      throw new Error();
+      return {
+        ok: false,
+        error: 'Verification not found.',
+      };
     } catch (error) {
-      console.log(error);
-      return false;
+      return {
+        ok: false,
+        error,
+      };
     }
   }
 }
