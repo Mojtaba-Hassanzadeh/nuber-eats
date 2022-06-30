@@ -3,9 +3,11 @@
 # ------------------------------------------------------
 
 type User {
+  _id: String!
   email: String!
   password: String!
   role: UserRole!
+  verified: Boolean!
 }
 
 enum UserRole {
@@ -19,19 +21,38 @@ type CreateAccountOutput {
   ok: Boolean!
 }
 
+type EditProfileOutput {
+  error: String
+  ok: Boolean!
+}
+
 type LoginOutput {
   error: String
   ok: Boolean!
   token: String
 }
 
+type UserProfileOutput {
+  error: String
+  ok: Boolean!
+  user: User
+}
+
+type VerifyEmailOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Query {
   me: User!
+  userProfile(userId: String!): UserProfileOutput!
 }
 
 type Mutation {
   createAccount(input: CreateAccountInput!): CreateAccountOutput!
   login(input: LoginInput!): LoginOutput!
+  editProfile(input: EditProfileInput!): EditProfileOutput!
+  verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
 }
 
 input CreateAccountInput {
@@ -43,4 +64,13 @@ input CreateAccountInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input EditProfileInput {
+  email: String
+  password: String
+}
+
+input VerifyEmailInput {
+  code: String!
 }

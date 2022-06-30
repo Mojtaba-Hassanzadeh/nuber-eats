@@ -10,6 +10,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsEmail, IsEnum, IsString } from 'class-validator';
+import { Verification } from './verification.entity';
 
 enum UserRole {
   Client,
@@ -31,7 +32,11 @@ export class User extends CoreEntity {
   @IsEmail()
   email: string;
 
-  @Prop()
+  @Prop({
+    type: String,
+    required: true,
+    select: false,
+  })
   @Field((type) => String)
   @IsString()
   password: string;
@@ -40,6 +45,10 @@ export class User extends CoreEntity {
   @Field((type) => UserRole)
   @IsEnum(UserRole)
   role: UserRole;
+
+  @Prop({ default: false })
+  @Field((type) => Boolean)
+  verified: boolean;
 
   checkPassword: (password: string) => Promise<boolean>;
 }
