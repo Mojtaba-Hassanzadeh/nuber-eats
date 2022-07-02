@@ -24,7 +24,7 @@ export class MailService {
     form.append('to', `m91.hassanzadeh@gmail.com`);
     form.append('subject', subject);
     form.append('template', template);
-    emailVars.forEach((eVar) => form.append(eVar.key, eVar.value));
+    emailVars.forEach((eVar) => form.append(`v:${eVar.key}`, eVar.value));
     try {
       await this.httpService.axiosRef.post(
         `https://api.mailgun.net/v3/${this.options.domain}/messages`,
@@ -40,8 +40,6 @@ export class MailService {
     } catch (error) {
       console.log(error);
     }
-    cll;
-    //console.log(response);
   }
 
   sendVerificationEmail(email: string, code: string) {

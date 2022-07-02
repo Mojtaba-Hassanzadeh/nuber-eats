@@ -40,11 +40,11 @@ export class UsersService {
       // (await this.usersModel.create({ email, password, role })).save();
       const user = await this.usersModel.create({ email, password, role });
       user.save();
-      (
-        await this.verificationsModel.create({
-          user,
-        })
-      ).save();
+      const verification = await this.verificationsModel.create({
+        user,
+      });
+      verification.save();
+      this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch (e) {
       return { ok: false, error: "Can't create account" };
@@ -89,7 +89,9 @@ export class UsersService {
     if (email) {
       user.email = email;
       user.verified = false;
-      await (await this.verificationsModel.create({ user })).save();
+      const verification = await this.verificationsModel.create({ user });
+      verification.save();
+      this.mailService.sendVerificationEmail(user.email, verification.code);
     }
     if (password) {
       user.password = await bcrypt.hash(password, 10);
