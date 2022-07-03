@@ -9,8 +9,9 @@ import { Document } from 'mongoose';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
-import { IsEmail, IsEnum, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { Verification } from './verification.entity';
+import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 
 enum UserRole {
   Client,
@@ -23,12 +24,12 @@ registerEnumType(UserRole, { name: 'UserRole' });
 
 export type UserDocument = User & Document;
 
-@InputType({ isAbstract: true })
+@InputType('UserInputType', { isAbstract: true })
 @ObjectType()
 @Schema({ timestamps: true })
 export class User extends CoreEntity {
   @Prop()
-  @Field((type) => String)
+  @Field(() => String)
   @IsEmail()
   email: string;
 
@@ -37,18 +38,25 @@ export class User extends CoreEntity {
     required: true,
     select: false,
   })
-  @Field((type) => String)
+  @Field(() => String)
   @IsString()
   password: string;
 
   @Prop()
-  @Field((type) => UserRole)
+  @Field(() => UserRole)
   @IsEnum(UserRole)
   role: UserRole;
 
   @Prop({ default: false })
-  @Field((type) => Boolean)
+  @Field(() => Boolean)
+  @IsBoolean()
   verified: boolean;
+
+  @Field(() => [Restaurant])
+  @Prop({
+    type: [{ type: String, ref: 'Restaurant' }],
+  })
+  resturants: string[];
 
   checkPassword: (password: string) => Promise<boolean>;
 }
