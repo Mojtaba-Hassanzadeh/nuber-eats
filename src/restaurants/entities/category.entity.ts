@@ -12,20 +12,28 @@ export type CategoryDocument = Category & Document;
 @ObjectType()
 @Schema({ timestamps: true })
 export class Category extends CoreEntity {
-  @Field((type) => String)
-  @Prop()
+  @Field(() => String)
+  @Prop({ unique: true })
   @IsString()
   @Length(5)
   name: string;
 
-  @Field((type) => String)
-  @Prop()
+  @Field(() => String, { nullable: true })
+  @Prop({ required: false })
   @IsString()
   coverImg: string;
 
-  @Field((type) => [Restaurant])
+  @Field(() => String)
+  @Prop({
+    required: true,
+    unique: true,
+  })
+  @IsString()
+  slug: string;
+
+  @Field(() => [Restaurant])
   @Prop({ type: [{ type: String, ref: 'Restaurant' }] })
-  restaurants: string[];
+  restaurants: Restaurant[];
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

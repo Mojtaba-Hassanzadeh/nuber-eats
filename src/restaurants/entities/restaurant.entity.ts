@@ -23,6 +23,11 @@ export class Restaurant extends CoreEntity {
   @IsString()
   coverImg: string;
 
+  @Field(() => String)
+  @Prop({ default: 'Guilan, Rasht' })
+  @IsString()
+  address: string;
+
   @Field(() => Category, { nullable: true })
   @Prop({
     type: String,
@@ -30,7 +35,7 @@ export class Restaurant extends CoreEntity {
   })
   @IsString()
   @IsOptional()
-  category: string;
+  category: Category;
 
   @Field(() => User)
   @Prop({
@@ -38,7 +43,7 @@ export class Restaurant extends CoreEntity {
     ref: 'User',
   })
   @IsString()
-  owner: string;
+  owner: User;
 }
 
 export const RestaurantSchema = SchemaFactory.createForClass(Restaurant);
