@@ -7,10 +7,14 @@ import {
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
 import {
+  DeleteRestaurantInput,
+  DeleteRestaurantOutput,
+} from './dtos/delete-restaurant.dto';
+import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
-import { Category, CategoryDocument } from './entities/category.entity';
+import { Category } from './entities/category.entity';
 import { Restaurant, RestaurantDocument } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
 
@@ -88,6 +92,40 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not edit restaurant',
+      };
+    }
+  }
+
+  async deleteRestaurant(
+    owner: User,
+    deleteRestaurantInput: DeleteRestaurantInput,
+  ): Promise<DeleteRestaurantOutput> {
+    try {
+      const restaurant: Restaurant = await this.restaurantsModel.findOne({
+        _id: deleteRestaurantInput.restaurantId,
+      });
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      if (owner._id !== restaurant.owner.toString()) {
+        return {
+          ok: false,
+          error: `You can't delete this restaurant`,
+        };
+      }
+      await this.restaurantsModel.findOneAndDelete({
+        _id: deleteRestaurantInput.restaurantId,
+      });
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'Could not delete restaurant',
       };
     }
   }
