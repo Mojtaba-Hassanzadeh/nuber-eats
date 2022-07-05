@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User } from 'src/users/entities/user.entity';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
+import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -23,6 +24,7 @@ import {
   SearchRestaurantOutput,
 } from './dtos/search-restaurant.dto';
 import { Category, CategoryDocument } from './entities/category.entity';
+import { Dish, DishDocument } from './entities/dish.entity';
 import { Restaurant, RestaurantDocument } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
 
@@ -34,6 +36,8 @@ export class RestaurantService {
     private readonly categoriesModel: CategoryRepository,
     @InjectModel(Category.name)
     private readonly categories: Model<CategoryDocument>,
+    @InjectModel(Dish.name)
+    private readonly dishesModel: Model<DishDocument>,
   ) {}
 
   async createRestaurant(
@@ -292,6 +296,39 @@ export class RestaurantService {
       };
     } catch {
       return { ok: false, error: 'Could not search for restaurants' };
+    }
+  }
+
+  async createDish(
+    owner: User,
+    createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    try {
+      const restaurant: Restaurant = await this.restaurantsModel.findOne({
+        _id: createDishInput.restaurantId,
+      });
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      if (owner._id !== restaurant.owner.toString()) {
+        return {
+          ok: false,
+          error: "You can't do that.",
+        };
+      }
+      await this.dishesModel.create({ ...createDishInput, restaurant });
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        ok: false,
+        error: 'Could not create dish',
+      };
     }
   }
 }

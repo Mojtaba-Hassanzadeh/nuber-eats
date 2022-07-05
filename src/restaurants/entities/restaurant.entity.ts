@@ -5,6 +5,7 @@ import { Document } from 'mongoose';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Category } from './category.entity';
+import { Dish } from './dish.entity';
 
 export type RestaurantDocument = Restaurant & Document;
 
@@ -42,6 +43,10 @@ export class Restaurant extends CoreEntity {
     ref: 'User',
   })
   owner: User;
+
+  @Field(() => [Dish])
+  @Prop([{ type: { type: String, ref: 'Dish' } }])
+  menu: Dish[];
 }
 
 export const RestaurantSchema = SchemaFactory.createForClass(Restaurant);
