@@ -1,8 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema } from '@nestjs/mongoose';
-import { ObjectId } from 'mongoose';
 import { v4 as uuid } from 'uuid';
-import mongoose from 'mongoose';
 
 @ObjectType()
 @Schema()
@@ -13,6 +11,6 @@ export class CoreEntity {
       return uuid();
     },
   })
-  @Field((type) => String)
+  @Field(() => String)
   _id: string;
 }

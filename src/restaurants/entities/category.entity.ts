@@ -1,7 +1,6 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
-import { string } from 'joi';
+import { IsString, Length } from 'class-validator';
 import { Document } from 'mongoose';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Restaurant } from './restaurant.entity';
@@ -24,14 +23,11 @@ export class Category extends CoreEntity {
   coverImg: string;
 
   @Field(() => String)
-  @Prop({
-    required: true,
-    unique: true,
-  })
+  @Prop({ unique: true })
   @IsString()
   slug: string;
 
-  @Field(() => [Restaurant])
+  @Field(() => [Restaurant], { nullable: true })
   @Prop({ type: [{ type: String, ref: 'Restaurant' }] })
   restaurants: Restaurant[];
 }

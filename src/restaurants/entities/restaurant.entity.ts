@@ -24,7 +24,7 @@ export class Restaurant extends CoreEntity {
   coverImg: string;
 
   @Field(() => String)
-  @Prop({ default: 'Guilan, Rasht' })
+  @Prop()
   @IsString()
   address: string;
 
@@ -32,9 +32,8 @@ export class Restaurant extends CoreEntity {
   @Prop({
     type: String,
     ref: 'Category',
+    required: false,
   })
-  @IsString()
-  @IsOptional()
   category: Category;
 
   @Field(() => User)
@@ -42,7 +41,6 @@ export class Restaurant extends CoreEntity {
     type: String,
     ref: 'User',
   })
-  @IsString()
   owner: User;
 }
 
