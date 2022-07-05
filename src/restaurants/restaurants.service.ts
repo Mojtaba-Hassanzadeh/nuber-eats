@@ -16,7 +16,12 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
+import {
+  SearchRestaurantInput,
+  SearchRestaurantOutput,
+} from './dtos/search-restaurant.dto';
 import { Category, CategoryDocument } from './entities/category.entity';
 import { Restaurant, RestaurantDocument } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
@@ -232,6 +237,61 @@ export class RestaurantService {
         ok: false,
         error: 'Could not load restaurants',
       };
+    }
+  }
+
+  async findRestaurantById({
+    restaurantId,
+  }: RestaurantInput): Promise<RestaurantOutput> {
+    try {
+      const restaurant = await this.restaurantsModel.findOne({
+        _id: restaurantId,
+      });
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      return {
+        ok: true,
+        restaurant,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not find restaurant',
+      };
+    }
+  }
+
+  async searchRestaurantByName({
+    query,
+    page,
+  }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
+    try {
+      const restaurants = await this.restaurantsModel.find(
+        {
+          name: {
+            $regex: query,
+            $options: 'i',
+          },
+        },
+        {
+          limit: 25,
+          skip: (page - 1) * 25,
+        },
+      );
+      console.log(restaurants);
+      const totalResults = await this.restaurantsModel.countDocuments();
+      return {
+        ok: true,
+        restaurants,
+        totalResults,
+        totalPages: Math.ceil(totalResults / 2),
+      };
+    } catch {
+      return { ok: false, error: 'Could not search for restaurants' };
     }
   }
 }

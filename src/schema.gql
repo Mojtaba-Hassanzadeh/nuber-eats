@@ -93,6 +93,12 @@ type EditRestaurantOutput {
   ok: Boolean!
 }
 
+type RestaurantOutput {
+  error: String
+  ok: Boolean!
+  restaurant: Restaurant
+}
+
 type RestaurantsOutput {
   error: String
   ok: Boolean!
@@ -101,12 +107,22 @@ type RestaurantsOutput {
   results: [Restaurant!]
 }
 
+type SearchRestaurantOutput {
+  error: String
+  ok: Boolean!
+  totalPages: Int
+  totalResults: Int
+  restaurants: [Restaurant!]
+}
+
 type Query {
   me: User!
   userProfile(userId: String!): UserProfileOutput!
   allCategories: AllCategoriesOutput!
   category(input: CategoryInput!): CategoryOutput!
   restaurants(input: RestaurantsInput!): RestaurantsOutput!
+  restaurant(input: RestaurantInput!): RestaurantOutput!
+  searchRestaurant(input: SearchRestaurantInput!): SearchRestaurantOutput!
 }
 
 input CategoryInput {
@@ -116,6 +132,15 @@ input CategoryInput {
 
 input RestaurantsInput {
   page: Int = 1
+}
+
+input RestaurantInput {
+  restaurantId: String!
+}
+
+input SearchRestaurantInput {
+  page: Int = 1
+  query: String!
 }
 
 type Mutation {
